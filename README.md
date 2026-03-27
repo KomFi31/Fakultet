@@ -6,7 +6,7 @@ Dodatni projekti koji će biti obrađeni do kraja studija:
   - Diplomski rad (nije još određeno)
   - Primena DSP u upravljanju (Python)
   - Analiza slike u biomedicini (MatLab)
-
+  - Projektovanje SCADA sistema (C#)
 ---
 
 ## Projekti
