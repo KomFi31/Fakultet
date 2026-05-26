@@ -3,7 +3,7 @@
 U ovom repozitorijumu nalaze se projekti koje sam radio tokom studija.  
 Fokus je na razumevanju principa rada, a ne samo implementaciji.
 Dodatni projekti koji će biti obrađeni do kraja studija:
-  - Diplomski rad (nije još određeno)
+  - Diplomski rad (CodeSys)
   - Primena DSP u upravljanju (Python)
   - Analiza slike u biomedicini (MatLab)
   - Projektovanje SCADA sistema (C#)
