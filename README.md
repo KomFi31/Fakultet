@@ -97,3 +97,38 @@ Dodatni projekti koji će biti obrađeni do kraja studija:
     - Izrada kompletne električne dokumentacije za ožičenje sistema, sa ciljem jasnog i standardizovanog prikaza električnih veza radi lakše implementacije i održavanja
 
 📎 Napomena: U prilogu je samo odštampan PDF elektroinstalacija i plana s obzirom da je projekat rađen na virutelnoj mašini u prostorijama fakulteta, gde je i branjen, i da originalan fajl nemam sačuvan već samo izveštaj iz EPLAN.
+
+### 4. Digitalna obrada signala sa mrežnom smetnjom
+
+## Implementacija
+
+Projekat je realizovan u Pythonu kroz Jupyter Notebook.  
+Korišćen je sopstveni mono govorni snimak u WAV formatu, frekvencije odabiranja 16 kHz.
+
+U početnom delu projekta izvršeno je:
+
+- učitavanje audio signala,
+- normalizacija signala,
+- prikaz osnovnih informacija o snimku,
+- prikaz govornog signala u vremenskom domenu.
+
+U nastavku projekta biće dodata mrežna smetnja frekvencije 50 Hz, izvršena FFT analiza i projektovani digitalni filteri za njeno potiskivanje.
+
+## Doprinos
+
+Projekat prikazuje osnovne korake digitalne obrade audio signala u Pythonu.  
+Poseban akcenat je na analizi realnog govornog signala i razumevanju uticaja mrežne smetnje na signal.
+
+Kroz projekat se obrađuju sledeći koncepti:
+
+- rad sa WAV audio fajlovima,
+- vremenska analiza signala,
+- frekvencijska analiza pomoću FFT-a,
+- modelovanje sinusne smetnje,
+- projektovanje i poređenje digitalnih filtera.
+
+## Svrha projekta
+
+Svrha projekta je da se prikaže kako se realan govorni signal može analizirati i obraditi pomoću metoda digitalne obrade signala.
+
+Projekat služi kao praktičan primer primene teorijskih znanja iz obrade signala, posebno u kontekstu uklanjanja mrežne smetnje od 50 Hz iz audio signala.
