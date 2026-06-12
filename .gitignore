@@ -17,3 +17,22 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Veliki originalni video-snimci
+Obrada slike/Video/*
+!Obrada slike/Video/.gitkeep
+
+# Generisani MATLAB rezultati
+Obrada slike/Rezultati/*
+!Obrada slike/Rezultati/.gitkeep
+
+# Automatski izdvojene slike za testiranje
+Obrada slike/Primeri/*
+!Obrada slike/Primeri/.gitkeep
+
+# MATLAB privremeni fajlovi
+*.asv
+*.autosave
+
+# MATLAB workspace i rezultati
+*.mat
