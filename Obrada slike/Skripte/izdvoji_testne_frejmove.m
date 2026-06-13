@@ -1,4 +1,13 @@
-%% 11. Čuvanje karakterističnih frejmova za pregled
+function izdvoji_testne_frejmove( ...
+    folderProjekta, ...
+    frejmPocetakGray, ...
+    frejmSredinaGray, ...
+    frejmKrajGray, ...
+    referentnaSlika, ...
+    roiPozicija)
+% IZDVOJI_TESTNE_FREJMOVE
+% Čuva karakteristične frejmove i njihove ROI oblasti radi
+% provere i podešavanja algoritma za detekciju ivica.
 
 folderPrimeri = fullfile(folderProjekta, 'Primeri');
 
@@ -6,12 +15,14 @@ if ~isfolder(folderPrimeri)
     mkdir(folderPrimeri);
 end
 
-% Izdvajanje istog ROI regiona iz sva tri frejma
+%% Izdvajanje istog ROI regiona iz sva tri frejma
+
 roiPocetak = imcrop(frejmPocetakGray, roiPozicija);
 roiSredina = imcrop(frejmSredinaGray, roiPozicija);
 roiKraj = imcrop(frejmKrajGray, roiPozicija);
 
-% Čuvanje celih frejmova
+%% Čuvanje celih frejmova
+
 imwrite(frejmPocetakGray, ...
     fullfile(folderPrimeri, 'frejm_pocetak.png'));
 
@@ -21,7 +32,8 @@ imwrite(frejmSredinaGray, ...
 imwrite(frejmKrajGray, ...
     fullfile(folderPrimeri, 'frejm_kraj.png'));
 
-% Čuvanje izdvojenog regiona krvnog suda
+%% Čuvanje ROI oblasti
+
 imwrite(roiPocetak, ...
     fullfile(folderPrimeri, 'roi_pocetak.png'));
 
@@ -36,3 +48,5 @@ imwrite(referentnaSlika, ...
 
 fprintf('\nKarakteristični frejmovi su sačuvani u:\n%s\n', ...
     folderPrimeri);
+
+end
