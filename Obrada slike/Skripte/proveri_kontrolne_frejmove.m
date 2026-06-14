@@ -1,7 +1,8 @@
 %% Vizuelna provera detekcije na kontrolnim frejmovima
-% Svrha skripte je da proverimo sumnjive rezultate na dobijenom grafiku iz
-% skripte "pokreni_obradu_celog_videa.m". To se moze proveriti i vizuelno
-% puštanjem snimka ali radi matematičke korektnosti formiramo skriptu.
+% Svrha skripte je provera sumnjivih rezultata sa grafika dobijenog
+% skriptom "pokreni_obradu_celog_videa.m". Rezultati se mogu proveriti
+% i reprodukcijom snimka, ali se ovom skriptom vrši pregled precizno
+% izabranih vremenskih trenutaka.
 clear;
 close all;
 clc;
@@ -16,7 +17,7 @@ folderRezultati = fullfile(folderProjekta, 'Rezultati');
 
 putanjaRezultata = fullfile( ...
     folderRezultati, ...
-    'rezultati_vertikalni_precnik.mat');
+    'rezultati_obrade_krvnog_suda.mat');
 
 if ~isfile(putanjaRezultata)
     error([ ...
