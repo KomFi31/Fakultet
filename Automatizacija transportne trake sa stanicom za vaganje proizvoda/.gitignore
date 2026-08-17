@@ -1,0 +1,71 @@
+# =========================
+# Windows system files
+# =========================
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# =========================
+# Editor / temporary files
+# =========================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.swp
+*.swo
+~$*
+*.log
+
+# =========================
+# CoDeSys / CODESYS temporary and generated files
+# =========================
+*.project~
+*.library~
+*.pro~
+*.compileinfo
+*.bootinfo
+*.plclog
+*.err
+*.map
+*.lst
+
+# =========================
+# Build / runtime / generated binaries
+# =========================
+*.bin
+*.hex
+*.elf
+*.o
+*.obj
+*.exe
+*.dll
+
+# =========================
+# Archives
+# =========================
+*.zip
+*.rar
+*.7z
+
+# =========================
+# Local simulation/results that are not final
+# =========================
+Simulacija/temp/
+Simulacija/logs/
+Simulacija/cache/
+
+# =========================
+# Keep these tracked
+# =========================
+!.gitkeep
+!*.pro
+!*.project
+!*.exp
+!*.pdf
+!*.md
+!*.png
+!*.jpg
+!*.jpeg
