@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DataConcentrator.Model;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataConcentrator
 {
@@ -16,6 +12,10 @@ namespace DataConcentrator
         private string name;
 
         private string description;
+
+        private string ioAddress;
+
+        private TagType type;
 
 
         #region Properties
@@ -38,6 +38,27 @@ namespace DataConcentrator
             {
                 description = value;
                 OnPropertyChanged("Description");
+            }
+        }
+
+
+        public string IOAddress
+        {
+            get { return ioAddress; }
+            set
+            {
+                ioAddress = value;
+                OnPropertyChanged("IOAddress");
+            }
+        }
+
+        public TagType Type
+        {
+            get { return type; }
+            set
+            {
+                type = value;
+                OnPropertyChanged("Type");
             }
         }
 
