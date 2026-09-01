@@ -4,8 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataConcentrator
 {
-    // napraviti AnalogInput, AnalogOuput, DigitalInput i 
-    // DigitalOutput klase koje nasledjuju Tag klasu
+ /*
+ * Predstavlja baznu klasu za sve tagove u SCADA sistemu.
+ * Sadrzi zajednicke podatke kao sto su naziv, opis, I/O adresa i tip taga.
+ * Iz ove klase nasledjuju analogni i digitalni ulazi i izlazi.
+ */
     public class Tag : INotifyPropertyChanged
     {
        

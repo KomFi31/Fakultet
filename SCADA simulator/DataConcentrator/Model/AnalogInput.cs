@@ -1,5 +1,10 @@
 ﻿namespace DataConcentrator.Model
 {
+    /*
+    * Predstavlja analogni ulazni tag.
+    * Sadrzi parametre za skeniranje, granicne vrednosti i alarmnu logiku
+    * kao sto su deadband i hysteresis.
+    */
     public class AnalogInput : Tag
     {
         private double scanTime;

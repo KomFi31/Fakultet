@@ -1,5 +1,10 @@
 ﻿namespace DataConcentrator.Model
 {
+    /*
+     * Predstavlja analogni izlazni tag.
+     * Sadrzi granicne vrednosti, jedinicu mere i pocetnu vrednost izlaza.
+     * Koristi se za upis analognih vrednosti iz SCADA aplikacije ka PLC simulatoru.
+     */
     public class AnalogOutput : Tag
     {
         private double lowLimit;

@@ -3,6 +3,11 @@ using DataConcentrator.Model;
 
 namespace DataConcentrator
 {
+    /*
+     * Predstavlja Entity Framework kontekst baze podataka.
+     * Omogucava pristup tabelama tagova, alarma i aktiviranih alarma.
+     * Koristi se za perzistiranje podataka u SCADA sistemu.
+     */
     public class ContextClass : DbContext
     {
         private static ContextClass instance;

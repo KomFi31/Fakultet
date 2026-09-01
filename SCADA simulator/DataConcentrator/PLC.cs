@@ -1,36 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using PLCSimulator;
+﻿using PLCSimulator;
 
 namespace DataConcentrator
 {
+    /*
+     * Predstavlja posrednicku klasu izmedju Data Concentrator-a i PLC simulatora.
+     * Omogucava citanje ulaznih i upis izlaznih vrednosti bez direktnog pristupa simulatoru.
+     */
     public class PLC
     {
-        public static PLCSimulatorManager instance;
+        private static PLC instance;
+        private PLCSimulatorManager plcSimulator;
 
-        public static Dictionary<string, Thread> tagThreads = new Dictionary<string, Thread>();
-
-        public static PLCSimulatorManager Instance
+        public static PLC Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = new PLCSimulatorManager();
-                    instance.StartPLCSimulator();
+                    instance = new PLC();
                 }
+
                 return instance;
             }
         }
 
+        private PLC()
+        {
+            plcSimulator = new PLCSimulatorManager();
+        }
+
+        public void StartSimulator()
+        {
+            plcSimulator.StartPLCSimulator();
+        }
+
         public void StopSimulator()
         {
-            instance.Abort();
+            plcSimulator.Abort();
         }
-         
+
+        public double ReadAnalogInputValue(string address)
+        {
+            return plcSimulator.GetAnalogValue(address);
+        }
+
+        public bool ReadDigitalInputValue(string address)
+        {
+            return plcSimulator.GetDigitalValue(address) == 1;
+        }
+
+        public void WriteAnalogOutputValue(string address, double value)
+        {
+            plcSimulator.SetAnalogValue(address, value);
+        }
+
+        public void WriteDigitalOutputValue(string address, bool value)
+        {
+            plcSimulator.SetDigitalValue(address, value ? 1 : 0);
+        }
     }
 }

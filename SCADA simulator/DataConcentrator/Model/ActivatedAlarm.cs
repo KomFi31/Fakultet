@@ -3,6 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataConcentrator.Model
 {
+    /*
+     * Predstavlja zapis o aktivaciji alarma.
+     * Cuva informacije o tome koji se alarm aktivirao, nad kojim tagom,
+     * sa kojom porukom i u kom trenutku.
+     */
     public class ActivatedAlarm // Klasa prakticno vraca povratnu informaciju o alarmu koji se aktivira detaljno
     {
         [Key]

@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DataConcentrator.Model
 {
+     /*
+     * Predstavlja definiciju alarma vezanog za analogni ulazni tag.
+     * Sadrzi granicu, uslov aktivacije, poruku i trenutno stanje alarma.
+     * Koristi se za proveru da li se analogna vrednost nalazi u alarmnoj zoni.
+     */
+
     // Above - aktivacija pri prekoracenju granice, Below - aktivacija prilikom pada ispod granice
     public enum AlarmCondition
     {
