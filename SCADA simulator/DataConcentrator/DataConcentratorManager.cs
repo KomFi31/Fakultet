@@ -143,5 +143,70 @@ namespace DataConcentrator
 
         #endregion
 
+        #region PLC Read/Write
+
+        // Pokretanje i zaustavljanje PLC simulatora.
+        public void StartPLCSimulator()
+        {
+            PLC.Instance.StartSimulator();
+        }
+
+        public void StopPLCSimulator()
+        {
+            PLC.Instance.StopSimulator();
+        }
+
+        // Citanje vrednosti dozvoljeno je samo za analogne ulazne tagove.
+        public double? ReadAnalogInput(string tagName)
+        {
+            AnalogInput tag = GetTag(tagName) as AnalogInput;
+
+            if (tag == null)
+                return null;
+
+            return PLC.Instance.ReadAnalogInputValue(tag.IOAddress);
+        }
+
+        // Citanje vrednosti dozvoljeno je samo za digitalne ulazne tagove.
+        public bool? ReadDigitalInput(string tagName)
+        {
+            DigitalInput tag = GetTag(tagName) as DigitalInput;
+
+            if (tag == null)
+                return null;
+
+            return PLC.Instance.ReadDigitalInputValue(tag.IOAddress);
+        }
+
+        // Analogna izlazna vrednost mora biti unutar definisanih granica taga.
+        public bool WriteAnalogOutput(string tagName, double value)
+        {
+            AnalogOutput tag = GetTag(tagName) as AnalogOutput;
+
+            if (tag == null)
+                return false;
+
+            if (value < tag.LowLimit || value > tag.HighLimit)
+                return false;
+
+            PLC.Instance.WriteAnalogOutputValue(tag.IOAddress, value);
+
+            return true;
+        }
+
+        // Digitalni izlaz moze imati samo stanje true ili false.
+        public bool WriteDigitalOutput(string tagName, bool value)
+        {
+            DigitalOutput tag = GetTag(tagName) as DigitalOutput;
+
+            if (tag == null)
+                return false;
+
+            PLC.Instance.WriteDigitalOutputValue(tag.IOAddress, value);
+
+            return true;
+        }
+
+        #endregion
     }
 }
