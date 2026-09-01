@@ -1,4 +1,6 @@
-﻿namespace DataConcentrator.Model
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DataConcentrator.Model
 {
     /*
     * Predstavlja analogni ulazni tag.
@@ -14,6 +16,8 @@
         private string units;
         private double deadband;
         private double hysteresis;
+
+        private double? currentValue;
 
         public double ScanTime
         {
@@ -82,6 +86,19 @@
             {
                 hysteresis = value;
                 OnPropertyChanged("Hysteresis");
+            }
+        }
+
+        // Trenutna vrednost ocitana iz PLC simulatora.
+        // Ne cuva se u bazi jer predstavlja trenutno stanje procesa.
+        [NotMapped]
+        public double? CurrentValue
+        {
+            get { return currentValue; }
+            set
+            {
+                currentValue = value;
+                OnPropertyChanged("CurrentValue");
             }
         }
     }

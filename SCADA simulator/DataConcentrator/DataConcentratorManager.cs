@@ -7,12 +7,24 @@
 using DataConcentrator.Model;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using System.Threading;
 
 namespace DataConcentrator
 {
     public class DataConcentratorManager
     {
         private static DataConcentratorManager instance;
+
+        private Thread scanThread;
+        private volatile bool scanRunning;
+
+        private readonly object scanLock = new object();
+
+        private readonly List<Tag> scanTags = new List<Tag>();
+
+        private readonly Dictionary<string, DateTime> lastScanTimes =
+            new Dictionary<string, DateTime>();
 
         public static DataConcentratorManager Instance
         {
@@ -53,6 +65,15 @@ namespace DataConcentrator
             ContextClass.Instance.Tags.Add(tag);
             ContextClass.Instance.SaveChanges();
 
+            if (scanRunning && (tag is AnalogInput || tag is DigitalInput))
+            {
+                lock (scanLock)
+                {
+                    scanTags.Add(tag);
+                    lastScanTimes[tag.Name] = DateTime.MinValue;
+                }
+            }
+
             return true;
         }
 
@@ -62,6 +83,12 @@ namespace DataConcentrator
 
             if (tag == null)
                 return false;
+
+            lock (scanLock)
+            {
+                scanTags.RemoveAll(t => t.Name == name);
+                lastScanTimes.Remove(name);
+            }
 
             // Brisanjem taga uklanjaju se i alarmi vezani za njega.
             List<Alarm> tagAlarms = GetAlarmsForTag(name);
@@ -205,6 +232,151 @@ namespace DataConcentrator
             PLC.Instance.WriteDigitalOutputValue(tag.IOAddress, value);
 
             return true;
+        }
+
+        #endregion
+
+        #region Input Scanning
+
+        public void StartScanning()
+        {
+            if (scanRunning)
+                return;
+
+            lock (scanLock)
+            {
+                scanTags.Clear();
+                lastScanTimes.Clear();
+
+                // Skeniraju se samo ulazni tagovi.
+                scanTags.AddRange(
+                    GetAllTags()
+                        .Where(tag => tag is AnalogInput || tag is DigitalInput)
+                );
+
+                foreach (Tag tag in scanTags)
+                {
+                    lastScanTimes[tag.Name] = DateTime.MinValue;
+                }
+            }
+
+            scanRunning = true;
+
+            scanThread = new Thread(ScanLoop);
+            scanThread.IsBackground = true;
+            scanThread.Start();
+        }
+
+        public void StopScanning()
+        {
+            scanRunning = false;
+
+            if (scanThread != null && scanThread.IsAlive)
+            {
+                scanThread.Join(1000);
+            }
+
+            scanThread = null;
+        }
+
+        private void ScanLoop()
+        {
+            while (scanRunning)
+            {
+                Tag[] tags;
+
+                // Pravimo kopiju kako dodavanje/brisanje taga
+                // ne bi menjalo kolekciju tokom foreach petlje.
+                lock (scanLock)
+                {
+                    tags = scanTags.ToArray();
+                }
+
+                foreach (Tag tag in tags)
+                {
+                    if (tag is AnalogInput analogInput)
+                    {
+                        ScanAnalogInput(analogInput);
+                    }
+                    else if (tag is DigitalInput digitalInput)
+                    {
+                        ScanDigitalInput(digitalInput);
+                    }
+                }
+
+                Thread.Sleep(50);
+            }
+        }
+
+        private void ScanAnalogInput(AnalogInput tag)
+        {
+            if (!tag.OnScan)
+                return;
+
+            if (!IsScanTimeReached(tag.Name, tag.ScanTime))
+                return;
+
+            double newValue =
+                PLC.Instance.ReadAnalogInputValue(tag.IOAddress);
+
+            // Prvo ocitavanje se uvek prihvata.
+            if (!tag.CurrentValue.HasValue)
+            {
+                tag.CurrentValue = newValue;
+                return;
+            }
+
+            // Promena se prihvata samo ako je veca ili jednaka deadband-u.
+            if (Math.Abs(newValue - tag.CurrentValue.Value) >= tag.Deadband)
+            {
+                tag.CurrentValue = newValue;
+
+                // Ovde cemo u sledecem koraku proveravati alarme.
+            }
+        }
+
+        private void ScanDigitalInput(DigitalInput tag)
+        {
+            if (!tag.OnScan)
+                return;
+
+            if (!IsScanTimeReached(tag.Name, tag.ScanTime))
+                return;
+
+            bool newValue =
+                PLC.Instance.ReadDigitalInputValue(tag.IOAddress);
+
+            if (!tag.CurrentValue.HasValue ||
+                tag.CurrentValue.Value != newValue)
+            {
+                tag.CurrentValue = newValue;
+            }
+        }
+
+        private bool IsScanTimeReached(string tagName, double scanTime)
+        {
+            if (scanTime <= 0)
+                return false;
+
+            DateTime now = DateTime.UtcNow;
+
+            lock (scanLock)
+            {
+                if (!lastScanTimes.ContainsKey(tagName))
+                {
+                    lastScanTimes[tagName] = DateTime.MinValue;
+                }
+
+                double elapsed =
+                    (now - lastScanTimes[tagName]).TotalSeconds;
+
+                if (elapsed < scanTime)
+                    return false;
+
+                lastScanTimes[tagName] = now;
+
+                return true;
+            }
         }
 
         #endregion
