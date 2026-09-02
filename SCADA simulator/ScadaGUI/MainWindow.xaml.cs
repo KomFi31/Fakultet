@@ -99,6 +99,53 @@ namespace ScadaGUI
             tagsDataGrid.Items.Refresh();
         }
 
+        private void DeleteTag_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            Tag selectedTag =
+                tagsDataGrid.SelectedItem as Tag;
+
+            if (selectedTag == null)
+            {
+                MessageBox.Show(
+                    "Select a tag first.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            MessageBoxResult result =
+                MessageBox.Show(
+                    "Are you sure you want to delete tag '" +
+                    selectedTag.Name + "'?",
+                    "Delete tag",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+                return;
+
+            bool removed =
+                DataConcentratorManager.Instance
+                    .RemoveTag(selectedTag.Name);
+
+            if (!removed)
+            {
+                MessageBox.Show(
+                    "Tag could not be deleted.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return;
+            }
+
+            LoadTags();
+        }
+
         private void Window_Closing(
             object sender,
             System.ComponentModel.CancelEventArgs e)

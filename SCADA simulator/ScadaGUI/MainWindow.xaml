@@ -41,6 +41,12 @@
                     Margin="10,0,0,0"
                     Click="ToggleScan_Click"/>
 
+            <Button Content="Delete"
+                    Width="100"
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Click="DeleteTag_Click"/>   
+
         </StackPanel>
 
         <!-- Prikaz svih tagova -->
