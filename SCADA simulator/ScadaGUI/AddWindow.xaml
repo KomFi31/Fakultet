@@ -1,0 +1,162 @@
+﻿<!--
+    Prozor za dodavanje tagova i alarma u SCADA sistem.
+    Prikazana polja zavise od tipa objekta izabranog u ComboBox kontroli.
+-->
+
+<Window x:Class="ScadaGUI.AddWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add SCADA Object"
+        Height="650"
+        Width="450"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="25">
+
+            <TextBlock Text="Add SCADA Object"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Margin="0,0,0,20"/>
+
+            <TextBlock Text="Type"/>
+
+            <ComboBox x:Name="typeComboBox"
+                      Height="30"
+                      Margin="0,5,0,15"
+                      SelectionChanged="TypeComboBox_SelectionChanged">
+                <ComboBoxItem Content="AI"/>
+                <ComboBoxItem Content="AO"/>
+                <ComboBoxItem Content="DI"/>
+                <ComboBoxItem Content="DO"/>
+                <ComboBoxItem Content="Alarm"/>
+            </ComboBox>
+
+            <StackPanel x:Name="tagFields"
+                        Visibility="Collapsed">
+
+                <TextBlock Text="Name"/>
+                <TextBox x:Name="nameTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+                <TextBlock Text="Description"/>
+                <TextBox x:Name="descriptionTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+                <TextBlock Text="I/O Address"/>
+                <TextBox x:Name="ioAddressTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+            </StackPanel>
+
+            <StackPanel x:Name="inputFields"
+                        Visibility="Collapsed">
+
+                <TextBlock Text="Scan time [s]"/>
+                <TextBox x:Name="scanTimeTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+                <CheckBox x:Name="onScanCheckBox"
+                          Content="On scan"
+                          Margin="0,5,0,15"/>
+
+            </StackPanel>
+
+            <StackPanel x:Name="analogFields"
+                        Visibility="Collapsed">
+
+                <TextBlock Text="Low limit"/>
+                <TextBox x:Name="lowLimitTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+                <TextBlock Text="High limit"/>
+                <TextBox x:Name="highLimitTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+                <TextBlock Text="Units"/>
+                <TextBox x:Name="unitsTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+            </StackPanel>
+
+            <StackPanel x:Name="analogInputFields"
+                        Visibility="Collapsed">
+
+                <TextBlock Text="Deadband"/>
+                <TextBox x:Name="deadbandTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+                <TextBlock Text="Hysteresis"/>
+                <TextBox x:Name="hysteresisTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+            </StackPanel>
+
+            <StackPanel x:Name="outputFields"
+                        Visibility="Collapsed">
+
+                <TextBlock Text="Initial value"/>
+                <TextBox x:Name="initialValueTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+            </StackPanel>
+
+            <StackPanel x:Name="alarmFields"
+                        Visibility="Collapsed">
+
+                <TextBlock Text="Analog input tag"/>
+                <ComboBox x:Name="alarmTagComboBox"
+                          Height="30"
+                          Margin="0,5,0,10"/>
+
+                <TextBlock Text="Limit"/>
+                <TextBox x:Name="alarmLimitTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+                <TextBlock Text="Condition"/>
+                <ComboBox x:Name="alarmConditionComboBox"
+                          Height="30"
+                          Margin="0,5,0,10">
+                    <ComboBoxItem Content="Above"/>
+                    <ComboBoxItem Content="Below"/>
+                </ComboBox>
+
+                <TextBlock Text="Message"/>
+                <TextBox x:Name="alarmMessageTextBox"
+                         Height="30"
+                         Margin="0,5,0,10"/>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,20,0,0">
+
+                <Button Content="Cancel"
+                        Width="90"
+                        Height="32"
+                        Margin="0,0,10,0"
+                        Click="Cancel_Click"/>
+
+                <Button Content="Add"
+                        Width="90"
+                        Height="32"
+                        Click="Add_Click"/>
+
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
