@@ -1,0 +1,112 @@
+﻿<!--
+    Prikazuje alarme vezane za izabrani analogni ulazni tag.
+    Omogucava pregled stanja alarma i prihvatanje aktivnog alarma.
+-->
+
+<Window x:Class="ScadaGUI.AlarmDetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:model="clr-namespace:DataConcentrator.Model;assembly=DataConcentrator"
+        Title="Alarm Details"
+        Height="450"
+        Width="750"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="tagNameTextBlock"
+                   Grid.Row="0"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,15"/>
+
+        <DataGrid x:Name="alarmsDataGrid"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  CanUserAddRows="False"
+                  SelectionMode="Single">
+
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+
+                    <Style.Triggers>
+
+                        <!-- Aktivni alarm -->
+                        <DataTrigger Binding="{Binding State}"
+                                     Value="{x:Static model:AlarmState.Active}">
+                            <Setter Property="Background"
+                                    Value="LightCoral"/>
+                        </DataTrigger>
+
+                        <!-- Prihvaceni alarm -->
+                        <DataTrigger Binding="{Binding State}"
+                                     Value="{x:Static model:AlarmState.Acknowledged}">
+                            <Setter Property="Background"
+                                    Value="#FFF4E02D"/>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+
+                </Style>
+            </DataGrid.RowStyle>
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Id}"
+                                    Width="60"/>
+
+                <DataGridTextColumn Header="Limit"
+                                    Binding="{Binding Limit}"
+                                    Width="100"/>
+
+                <DataGridTextColumn Header="Condition"
+                                    Binding="{Binding Condition}"
+                                    Width="110"/>
+
+                <DataGridTextColumn Header="Message"
+                                    Binding="{Binding Message}"
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="State"
+                                    Binding="{Binding State}"
+                                    Width="130"/>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,15,0,0">
+
+            <Button Content="Refresh"
+                    Width="100"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Click="Refresh_Click"/>
+
+            <Button Content="Acknowledge"
+                    Width="120"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Click="Acknowledge_Click"/>
+
+            <Button Content="Close"
+                    Width="100"
+                    Height="35"
+                    Click="Close_Click"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>

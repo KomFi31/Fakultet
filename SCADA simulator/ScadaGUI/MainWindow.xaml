@@ -56,7 +56,14 @@
                     Width="110"
                     Height="40"
                     Padding="10,5"
-                    Click="WriteValue_Click"/>  
+                    Click="WriteValue_Click"/>
+
+            <Button Content="Details"
+                    Width="110"
+                    Height="40"
+                    Margin="10,0,0,0"
+                    Padding="10,5"
+                    Click="Details_Click"/> 
 
         </StackPanel>
 
