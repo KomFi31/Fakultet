@@ -147,6 +147,16 @@ namespace ScadaGUI
             if (!ValidateTagCommonFields())
                 return false;
 
+            if (!ValidateIOAddress(
+                ioAddressTextBox.Text.Trim(),
+                TagType.AI))
+            {
+                ShowValidationError(
+                    "Invalid I/O address for analog input.");
+
+                return false;
+            }
+
             if (!TryReadDouble(scanTimeTextBox, "Scan time", out double scanTime) ||
                 !TryReadDouble(lowLimitTextBox, "Low limit", out double lowLimit) ||
                 !TryReadDouble(highLimitTextBox, "High limit", out double highLimit) ||
@@ -208,6 +218,16 @@ namespace ScadaGUI
             if (!ValidateTagCommonFields())
                 return false;
 
+            if (!ValidateIOAddress(
+                ioAddressTextBox.Text.Trim(),
+                TagType.AO))
+            {
+                ShowValidationError(
+                    "Invalid I/O address for Analog output.");
+
+                return false;
+            }
+
             if (!TryReadDouble(lowLimitTextBox, "Low limit", out double lowLimit) ||
                 !TryReadDouble(highLimitTextBox, "High limit", out double highLimit) ||
                 !TryReadDouble(initialValueTextBox, "Initial value", out double initialValue))
@@ -261,6 +281,16 @@ namespace ScadaGUI
             if (!ValidateTagCommonFields())
                 return false;
 
+            if (!ValidateIOAddress(
+                ioAddressTextBox.Text.Trim(),
+                TagType.DI))
+            {
+                ShowValidationError(
+                    "Invalid I/O address for digital input.");
+
+                return false;
+            }
+
             if (!TryReadDouble(
                 scanTimeTextBox,
                 "Scan time",
@@ -301,6 +331,16 @@ namespace ScadaGUI
         {
             if (!ValidateTagCommonFields())
                 return false;
+
+            if (!ValidateIOAddress(
+                ioAddressTextBox.Text.Trim(),
+                TagType.DO))
+            {
+                ShowValidationError(
+                    "Invalid I/O address for digital output.");
+
+                return false;
+            }
 
             if (!TryReadDigitalValue(
                 initialValueTextBox.Text,
@@ -418,6 +458,47 @@ namespace ScadaGUI
             }
 
             return true;
+        }
+
+        private bool ValidateIOAddress(string address, TagType type)
+        {
+            string[] validAddresses;
+
+            switch (type)
+            {
+                case TagType.AI:
+                    validAddresses = new[]
+                    {
+                "ADDR001", "ADDR002", "ADDR003", "ADDR004"
+            };
+                    break;
+
+                case TagType.AO:
+                    validAddresses = new[]
+                    {
+                "ADDR005", "ADDR006", "ADDR007", "ADDR008"
+            };
+                    break;
+
+                case TagType.DI:
+                    validAddresses = new[]
+                    {
+                "ADDR009", "ADDR011", "ADDR012", "ADDR013"
+            };
+                    break;
+
+                case TagType.DO:
+                    validAddresses = new[]
+                    {
+                "ADDR010", "ADDR014", "ADDR015", "ADDR016"
+            };
+                    break;
+
+                default:
+                    return false;
+            }
+
+            return validAddresses.Contains(address.ToUpper());
         }
 
         private bool TryReadDouble(

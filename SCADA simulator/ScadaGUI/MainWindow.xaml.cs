@@ -22,6 +22,15 @@ namespace ScadaGUI
             manager.StartScanning();
         }
 
+        private void AddTag_Click(object sender, RoutedEventArgs e)
+        {
+            AddWindow addWindow = new AddWindow();
+
+            addWindow.Owner = this;
+
+            addWindow.ShowDialog();
+        }
+
         private void Window_Closing(
             object sender,
             System.ComponentModel.CancelEventArgs e)

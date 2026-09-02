@@ -10,7 +10,7 @@
     <Grid>
 
 
-        <Button Content="Add tag" Grid.Row="1" HorizontalAlignment="Left" 
+        <Button Content="Add tag" Click="AddTag_Click" Grid.Row="1" HorizontalAlignment="Left" 
                 VerticalAlignment="Bottom" Height="30" Width="150" Margin="15"/>
 
     </Grid>
