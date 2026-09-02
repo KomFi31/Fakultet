@@ -19,12 +19,17 @@ namespace DataConcentrator
         private Thread scanThread;
         private volatile bool scanRunning;
 
+        // Obavestava GUI da se alarm sa prosledjenim ID-em aktivirao.
+        public event Action<int> AlarmActivated;
+
         private readonly object scanLock = new object();
 
         private readonly List<Tag> scanTags = new List<Tag>();
 
         private readonly Dictionary<string, DateTime> lastScanTimes =
             new Dictionary<string, DateTime>();
+
+        private readonly object dbLock = new object();
 
         public static DataConcentratorManager Instance
         {
@@ -45,13 +50,19 @@ namespace DataConcentrator
         #region Tag Management
         public List<Tag> GetAllTags()
         {
-            return ContextClass.Instance.Tags.ToList();
+            lock (dbLock)
+            {
+                return ContextClass.Instance.Tags.ToList();
+            }
         }
 
         public Tag GetTag(string name)
         {
-            return ContextClass.Instance.Tags
-                .FirstOrDefault(tag => tag.Name == name);
+            lock (dbLock)
+            {
+                return ContextClass.Instance.Tags
+                    .FirstOrDefault(tag => tag.Name == name);
+            }
         }
 
         public bool AddTag(Tag tag)
@@ -62,8 +73,13 @@ namespace DataConcentrator
             if (GetTag(tag.Name) != null)
                 return false;
 
-            ContextClass.Instance.Tags.Add(tag);
-            ContextClass.Instance.SaveChanges();
+            SetTagType(tag);
+
+            lock (dbLock)
+            {
+                ContextClass.Instance.Tags.Add(tag);
+                ContextClass.Instance.SaveChanges();
+            }
 
             if (scanRunning && (tag is AnalogInput || tag is DigitalInput))
             {
@@ -93,12 +109,85 @@ namespace DataConcentrator
             // Brisanjem taga uklanjaju se i alarmi vezani za njega.
             List<Alarm> tagAlarms = GetAlarmsForTag(name);
 
-            ContextClass.Instance.Alarms.RemoveRange(tagAlarms);
-            ContextClass.Instance.Tags.Remove(tag);
+            lock (dbLock)
+            {
+                ContextClass.Instance.Alarms.RemoveRange(tagAlarms);
+                ContextClass.Instance.Tags.Remove(tag);
 
-            ContextClass.Instance.SaveChanges();
+                ContextClass.Instance.SaveChanges();
+            }
 
             return true;
+        }
+        public bool UpdateTag(Tag updatedTag)
+        {
+            if (updatedTag == null)
+                return false;
+
+            Tag existingTag = GetTag(updatedTag.Name);
+
+            if (existingTag == null)
+                return false;
+
+            // Nije dozvoljena promena vrste taga tokom update-a.
+            if (existingTag.GetType() != updatedTag.GetType())
+                return false;
+
+            lock (dbLock)
+            {
+                // Zajednicka svojstva svih tagova.
+                existingTag.Description = updatedTag.Description;
+                existingTag.IOAddress = updatedTag.IOAddress;
+
+                if (existingTag is AnalogInput existingAI &&
+                    updatedTag is AnalogInput updatedAI)
+                {
+                    existingAI.ScanTime = updatedAI.ScanTime;
+                    existingAI.OnScan = updatedAI.OnScan;
+                    existingAI.LowLimit = updatedAI.LowLimit;
+                    existingAI.HighLimit = updatedAI.HighLimit;
+                    existingAI.Units = updatedAI.Units;
+                    existingAI.Deadband = updatedAI.Deadband;
+                    existingAI.Hysteresis = updatedAI.Hysteresis;
+                }
+                else if (existingTag is AnalogOutput existingAO &&
+                         updatedTag is AnalogOutput updatedAO)
+                {
+                    existingAO.LowLimit = updatedAO.LowLimit;
+                    existingAO.HighLimit = updatedAO.HighLimit;
+                    existingAO.Units = updatedAO.Units;
+                    existingAO.InitialValue = updatedAO.InitialValue;
+                }
+                else if (existingTag is DigitalInput existingDI &&
+                         updatedTag is DigitalInput updatedDI)
+                {
+                    existingDI.ScanTime = updatedDI.ScanTime;
+                    existingDI.OnScan = updatedDI.OnScan;
+                }
+                else if (existingTag is DigitalOutput existingDO &&
+                         updatedTag is DigitalOutput updatedDO)
+                {
+                    existingDO.InitialValue = updatedDO.InitialValue;
+                }
+                lock (dbLock)
+                {
+                    ContextClass.Instance.SaveChanges();
+                }
+            }
+
+            return true;
+        }
+
+        private void SetTagType(Tag tag)
+        {
+            if (tag is AnalogInput)
+                tag.Type = TagType.AI;
+            else if (tag is AnalogOutput)
+                tag.Type = TagType.AO;
+            else if (tag is DigitalInput)
+                tag.Type = TagType.DI;
+            else if (tag is DigitalOutput)
+                tag.Type = TagType.DO;
         }
 
         #endregion
@@ -107,20 +196,29 @@ namespace DataConcentrator
 
         public List<Alarm> GetAllAlarms()
         {
-            return ContextClass.Instance.Alarms.ToList();
+            lock (dbLock)
+            {
+                return ContextClass.Instance.Alarms.ToList();
+            }
         }
 
         public Alarm GetAlarm(int id)
         {
-            return ContextClass.Instance.Alarms
+            lock (dbLock)
+            {
+                return ContextClass.Instance.Alarms
                 .FirstOrDefault(alarm => alarm.Id == id);
+            }
         }
 
         public List<Alarm> GetAlarmsForTag(string tagName)
         {
-            return ContextClass.Instance.Alarms
+            lock (dbLock)
+            {
+                return ContextClass.Instance.Alarms
                 .Where(alarm => alarm.TagName == tagName)
                 .ToList();
+            }
         }
 
         public bool AddAlarm(Alarm alarm)
@@ -134,10 +232,13 @@ namespace DataConcentrator
             if (!(tag is AnalogInput))
                 return false;
 
-            alarm.State = AlarmState.Inactive;
+            lock (dbLock)
+            {
+                alarm.State = AlarmState.Inactive;
 
-            ContextClass.Instance.Alarms.Add(alarm);
-            ContextClass.Instance.SaveChanges();
+                ContextClass.Instance.Alarms.Add(alarm);
+                ContextClass.Instance.SaveChanges();
+            }
 
             return true;
         }
@@ -149,8 +250,11 @@ namespace DataConcentrator
             if (alarm == null)
                 return false;
 
-            ContextClass.Instance.Alarms.Remove(alarm);
-            ContextClass.Instance.SaveChanges();
+            lock (dbLock)
+            {
+                ContextClass.Instance.Alarms.Remove(alarm);
+                ContextClass.Instance.SaveChanges();
+            }
 
             return true;
         }
@@ -162,8 +266,12 @@ namespace DataConcentrator
             if (alarm == null || alarm.State != AlarmState.Active)
                 return false;
 
-            alarm.State = AlarmState.Acknowledged;
-            ContextClass.Instance.SaveChanges();
+            lock (dbLock)
+            {
+                alarm.State = AlarmState.Acknowledged;
+
+                ContextClass.Instance.SaveChanges();
+            }
 
             return true;
         }
@@ -323,6 +431,7 @@ namespace DataConcentrator
             if (!tag.CurrentValue.HasValue)
             {
                 tag.CurrentValue = newValue;
+                CheckAlarms(tag);
                 return;
             }
 
@@ -331,7 +440,7 @@ namespace DataConcentrator
             {
                 tag.CurrentValue = newValue;
 
-                // Ovde cemo u sledecem koraku proveravati alarme.
+                CheckAlarms(tag);
             }
         }
 
@@ -380,5 +489,82 @@ namespace DataConcentrator
         }
 
         #endregion
+
+        #region Alarm Processing
+        private void CheckAlarms(AnalogInput tag)
+        {
+            if (!tag.CurrentValue.HasValue)
+                return;
+
+            double value = tag.CurrentValue.Value;
+
+            List<Alarm> alarms = GetAlarmsForTag(tag.Name);
+
+            foreach (Alarm alarm in alarms)
+            {
+                bool shouldActivate = false;
+                bool shouldDeactivate = false;
+
+                if (alarm.Condition == AlarmCondition.Above)
+                {
+                    // Alarm se aktivira kada vrednost predje iznad granice.
+                    shouldActivate = value > alarm.Limit;
+
+                    // Aktivni alarm se gasi tek kada vrednost padne
+                    // ispod granice umanjene za hysteresis.
+                    shouldDeactivate =
+                        value <= alarm.Limit - tag.Hysteresis;
+                }
+                else if (alarm.Condition == AlarmCondition.Below)
+                {
+                    // Alarm se aktivira kada vrednost padne ispod granice.
+                    shouldActivate = value < alarm.Limit;
+
+                    // Aktivni alarm se gasi tek kada vrednost poraste
+                    // iznad granice uvecane za hysteresis.
+                    shouldDeactivate =
+                        value >= alarm.Limit + tag.Hysteresis;
+                }
+
+                if (alarm.State == AlarmState.Inactive && shouldActivate)
+                {
+                    ActivateAlarm(alarm);
+                }
+                else if (alarm.State != AlarmState.Inactive && shouldDeactivate)
+                {
+                    alarm.State = AlarmState.Inactive;
+
+                    lock (dbLock)
+                    {
+                        ContextClass.Instance.SaveChanges();
+                    }
+                }
+            }
+        }
+
+        private void ActivateAlarm(Alarm alarm)
+        {
+            alarm.State = AlarmState.Active;
+
+            ActivatedAlarm activatedAlarm = new ActivatedAlarm
+            {
+                AlarmId = alarm.Id,
+                TagName = alarm.TagName,
+                Message = alarm.Message,
+                TimeStamp = DateTime.Now
+            };
+
+            lock (dbLock)
+            {
+                ContextClass.Instance.ActivatedAlarms.Add(activatedAlarm);
+                ContextClass.Instance.SaveChanges();
+            }
+
+            // GUI dobija informaciju koji alarm se aktivirao.
+            AlarmActivated?.Invoke(alarm.Id);
+        }
+
+        #endregion
+
     }
 }

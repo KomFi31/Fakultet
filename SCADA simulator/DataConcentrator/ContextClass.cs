@@ -34,5 +34,15 @@ namespace DataConcentrator
         public DbSet<Alarm> Alarms { get; set; }
 
         public DbSet<ActivatedAlarm> ActivatedAlarms { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AnalogInput>();
+            modelBuilder.Entity<AnalogOutput>();
+            modelBuilder.Entity<DigitalInput>();
+            modelBuilder.Entity<DigitalOutput>();
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
