@@ -4,6 +4,7 @@ using System.Windows.Threading;
 using DataConcentrator;
 using DataConcentrator.Model;
 using PLCSimulator;
+using System.Linq;
 
 namespace ScadaGUI
 {
@@ -16,84 +17,96 @@ namespace ScadaGUI
         {
             InitializeComponent();
 
+            DataConcentratorManager manager =
+                DataConcentratorManager.Instance;
+
             try
             {
-                DataConcentratorManager manager =
-                    DataConcentratorManager.Instance;
-
-                // Cistimo test podatke ako su ostali od prethodnog pokretanja.
-                manager.RemoveTag("TEST_AI");
+                manager.RemoveTag("SCAN_TEST_AI");
 
                 AnalogInput testTag = new AnalogInput
                 {
-                    Name = "TEST_AI",
-                    Description = "Initial description",
+                    Name = "SCAN_TEST_AI",
+                    Description = "Scan test analog input",
                     IOAddress = "ADDR001",
-                    ScanTime = 1,
+
+                    // Ocitavanje na svakih 100 ms
+                    ScanTime = 0.1,
                     OnScan = true,
+
                     LowLimit = 0,
                     HighLimit = 100,
-                    Units = "C",
-                    Deadband = 1,
+                    Units = "%",
+
+                    // Za potrebe testa prihvatamo svaku promenu.
+                    Deadband = 0,
                     Hysteresis = 2
                 };
 
-                bool added = manager.AddTag(testTag);
-
-                AnalogInput updatedTag = new AnalogInput
-                {
-                    Name = "TEST_AI",
-                    Description = "Updated description",
-                    IOAddress = "ADDR001",
-                    ScanTime = 0.5,
-                    OnScan = true,
-                    LowLimit = 0,
-                    HighLimit = 120,
-                    Units = "C",
-                    Deadband = 0.5,
-                    Hysteresis = 3
-                };
-
-                bool updated = manager.UpdateTag(updatedTag);
-
-                AnalogInput loadedTag =
-                    manager.GetTag("TEST_AI") as AnalogInput;
+                manager.AddTag(testTag);
 
                 Alarm testAlarm = new Alarm
                 {
-                    TagName = "TEST_AI",
-                    Limit = 80,
+                    TagName = "SCAN_TEST_AI",
+
+                    // ADDR001 generise vrednost >= 0,
+                    // pa ce alarm sigurno biti aktiviran.
+                    Limit = -1,
+
                     Condition = AlarmCondition.Above,
-                    Message = "Test temperature alarm"
+                    Message = "Scan test alarm"
                 };
 
-                bool alarmAdded = manager.AddAlarm(testAlarm);
+                manager.AddAlarm(testAlarm);
 
-                int alarmsBeforeDelete =
-                    manager.GetAlarmsForTag("TEST_AI").Count;
+                int activatedBefore =
+                    manager.GetActivatedAlarmsForTag("SCAN_TEST_AI").Count;
 
-                bool removed = manager.RemoveTag("TEST_AI");
+                int alarmEvents = 0;
 
-                Tag tagAfterDelete =
-                    manager.GetTag("TEST_AI");
+                manager.AlarmActivated += (alarmId) =>
+                {
+                    System.Threading.Interlocked.Increment(ref alarmEvents);
+                };
 
-                int alarmsAfterDelete =
-                    manager.GetAlarmsForTag("TEST_AI").Count;
+                manager.StartPLCSimulator();
+                manager.StartScanning();
+
+                // Dovoljno vremena za nekoliko ciklusa skeniranja.
+                System.Threading.Thread.Sleep(1200);
+
+                AnalogInput loadedTag =
+                    manager.GetTag("SCAN_TEST_AI") as AnalogInput;
+
+                Alarm loadedAlarm =
+                    manager.GetAlarmsForTag("SCAN_TEST_AI")
+                           .FirstOrDefault();
+
+                int activatedAfter =
+                    manager.GetActivatedAlarmsForTag("SCAN_TEST_AI").Count;
+
+                manager.StopScanning();
+                manager.StopPLCSimulator();
 
                 MessageBox.Show(
-                    "Tag added: " + added +
-                    "\nTag updated: " + updated +
-                    "\nDescription: " + loadedTag?.Description +
-                    "\nScan time: " + loadedTag?.ScanTime +
-                    "\nAlarm added: " + alarmAdded +
-                    "\nAlarms before delete: " + alarmsBeforeDelete +
-                    "\nTag removed: " + removed +
-                    "\nTag exists after delete: " + (tagAfterDelete != null) +
-                    "\nAlarms after delete: " + alarmsAfterDelete
+                    "Current value: " + loadedTag?.CurrentValue +
+                    "\nAlarm state: " + loadedAlarm?.State +
+                    "\nActivated before: " + activatedBefore +
+                    "\nActivated after: " + activatedAfter +
+                    "\nNew activated records: " +
+                        (activatedAfter - activatedBefore) +
+                    "\nAlarm events: " + alarmEvents
                 );
+
+                // Brisemo samo definiciju taga i alarma.
+                // ActivatedAlarm ostaje kao istorijski zapis.
+                manager.RemoveTag("SCAN_TEST_AI");
             }
             catch (Exception ex)
             {
+                manager.StopScanning();
+                manager.StopPLCSimulator();
+
                 MessageBox.Show(ex.ToString());
             }
         }

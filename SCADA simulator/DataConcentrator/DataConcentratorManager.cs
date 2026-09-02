@@ -276,6 +276,17 @@ namespace DataConcentrator
             return true;
         }
 
+        // Metode ce biti korisna kod rada sa GUI
+        public List<ActivatedAlarm> GetActivatedAlarmsForTag(string tagName)
+        {
+            lock (dbLock)
+            {
+                return ContextClass.Instance.ActivatedAlarms
+                    .Where(alarm => alarm.TagName == tagName)
+                    .ToList();
+            }
+        }
+
         #endregion
 
         #region PLC Read/Write
