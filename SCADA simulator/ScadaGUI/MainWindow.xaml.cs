@@ -146,6 +146,44 @@ namespace ScadaGUI
             LoadTags();
         }
 
+        private void WriteValue_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            Tag selectedTag =
+                tagsDataGrid.SelectedItem as Tag;
+
+            if (selectedTag == null)
+            {
+                MessageBox.Show(
+                    "Select a tag first.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            if (!(selectedTag is AnalogOutput) &&
+                !(selectedTag is DigitalOutput))
+            {
+                MessageBox.Show(
+                    "Values can only be written to output tags.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return;
+            }
+
+            WriteValueWindow window =
+                new WriteValueWindow(selectedTag);
+
+            window.Owner = this;
+
+            window.ShowDialog();
+        }
+
         private void Window_Closing(
             object sender,
             System.ComponentModel.CancelEventArgs e)

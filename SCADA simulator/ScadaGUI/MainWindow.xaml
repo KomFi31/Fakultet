@@ -9,7 +9,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SCADA Application"
         Height="600"
-        Width="950"
+        Width="1050"
         Closing="Window_Closing">
 
     <Grid Margin="20">
@@ -22,30 +22,41 @@
         <!-- Gornja traka -->
         <StackPanel Grid.Row="0"
                     Orientation="Horizontal"
-                    Margin="0,0,0,15">
+                    Margin="0,0,0,18">
 
             <Button Content="Add"
-                    Width="100"
-                    Height="35"
+                    Width="110"
+                    Height="40"
                     Margin="0,0,10,0"
+                    Padding="10,5"
                     Click="AddTag_Click"/>
 
             <Button Content="Refresh"
-                    Width="100"
-                    Height="35"
+                    Width="110"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Padding="10,5"
                     Click="Refresh_Click"/>
 
             <Button Content="Toggle Scan"
-                    Width="110"
-                    Height="35"
-                    Margin="10,0,0,0"
+                    Width="120"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Padding="10,5"
                     Click="ToggleScan_Click"/>
 
             <Button Content="Delete"
-                    Width="100"
-                    Height="35"
-                    Margin="10,0,0,0"
-                    Click="DeleteTag_Click"/>   
+                    Width="110"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Padding="10,5"
+                    Click="DeleteTag_Click"/>
+
+            <Button Content="Write"
+                    Width="110"
+                    Height="40"
+                    Padding="10,5"
+                    Click="WriteValue_Click"/>  
 
         </StackPanel>
 
