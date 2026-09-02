@@ -20,15 +20,37 @@ namespace ScadaGUI
 
             manager.StartPLCSimulator();
             manager.StartScanning();
+
+            LoadTags();
         }
 
-        private void AddTag_Click(object sender, RoutedEventArgs e)
+        private void LoadTags()
+        {
+            tagsDataGrid.ItemsSource =
+                DataConcentratorManager.Instance.GetAllTags();
+        }
+
+        private void AddTag_Click(
+            object sender,
+            RoutedEventArgs e)
         {
             AddWindow addWindow = new AddWindow();
 
             addWindow.Owner = this;
 
-            addWindow.ShowDialog();
+            bool? result = addWindow.ShowDialog();
+
+            if (result == true)
+            {
+                LoadTags();
+            }
+        }
+
+        private void Refresh_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            LoadTags();
         }
 
         private void Window_Closing(
