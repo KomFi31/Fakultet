@@ -63,7 +63,14 @@
                     Height="40"
                     Margin="10,0,0,0"
                     Padding="10,5"
-                    Click="Details_Click"/> 
+                    Click="Details_Click"/>
+
+            <Button Content="Edit"
+                    Width="110"
+                    Height="40"
+                    Margin="10,0,0,0"
+                    Padding="10,5"
+                    Click="EditTag_Click"/>
 
         </StackPanel>
 

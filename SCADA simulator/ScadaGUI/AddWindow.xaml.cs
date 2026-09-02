@@ -14,6 +14,10 @@ namespace ScadaGUI
 {
     public partial class AddWindow : Window
     {
+
+        private Tag tagToEdit;
+        private bool editMode = false;
+
         public AddWindow()
         {
             InitializeComponent();
@@ -22,7 +26,83 @@ namespace ScadaGUI
             alarmConditionComboBox.SelectedIndex = 0;
         }
 
+        public AddWindow(Tag tag)
+        {
+            InitializeComponent();
+
+            tagToEdit = tag;
+            editMode = true;
+
+            Title = "Edit Tag";
+            confirmButton.Content = "Save";
+
+            // Pri editovanju nije dozvoljeno menjanje imena ni tipa taga.
+            nameTextBox.IsEnabled = false;
+            typeComboBox.IsEnabled = false;
+
+            if (tag is AnalogInput)
+                typeComboBox.SelectedIndex = 0;
+            else if (tag is AnalogOutput)
+                typeComboBox.SelectedIndex = 1;
+            else if (tag is DigitalInput)
+                typeComboBox.SelectedIndex = 2;
+            else if (tag is DigitalOutput)
+                typeComboBox.SelectedIndex = 3;
+
+            PopulateTagFields(tag);
+        }
+
         #region Type Selection
+
+        private void PopulateTagFields(Tag tag)
+        {
+            nameTextBox.Text = tag.Name;
+            descriptionTextBox.Text = tag.Description;
+            ioAddressTextBox.Text = tag.IOAddress;
+
+            if (tag is AnalogInput ai)
+            {
+                scanTimeTextBox.Text = ai.ScanTime.ToString();
+                onScanCheckBox.IsChecked = ai.OnScan;
+
+                lowLimitTextBox.Text = ai.LowLimit.ToString();
+                highLimitTextBox.Text = ai.HighLimit.ToString();
+                unitsTextBox.Text = ai.Units;
+
+                deadbandTextBox.Text = ai.Deadband.ToString();
+                hysteresisTextBox.Text = ai.Hysteresis.ToString();
+            }
+            else if (tag is AnalogOutput ao)
+            {
+                lowLimitTextBox.Text = ao.LowLimit.ToString();
+                highLimitTextBox.Text = ao.HighLimit.ToString();
+                unitsTextBox.Text = ao.Units;
+
+                initialValueTextBox.Text = ao.InitialValue.ToString();
+            }
+            else if (tag is DigitalInput di)
+            {
+                scanTimeTextBox.Text = di.ScanTime.ToString();
+                onScanCheckBox.IsChecked = di.OnScan;
+            }
+            else if (tag is DigitalOutput doTag)
+            {
+                initialValueTextBox.Text =
+                    doTag.InitialValue ? "1" : "0";
+            }
+        }
+
+        private bool SaveTag(Tag tag)
+        {
+            if (editMode)
+            {
+                return DataConcentratorManager.Instance
+                    .UpdateTag(tag);
+            }
+
+            return DataConcentratorManager.Instance
+                .AddTag(tag);
+        }
 
         private void TypeComboBox_SelectionChanged(
             object sender,
@@ -131,8 +211,12 @@ namespace ScadaGUI
 
             if (success)
             {
+                string message = editMode
+                    ? "Tag successfully updated."
+                    : "Object successfully added.";
+
                 MessageBox.Show(
-                    "Object successfully added.",
+                    message,
                     "SCADA",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
@@ -202,7 +286,7 @@ namespace ScadaGUI
                 Hysteresis = hysteresis
             };
 
-            if (!DataConcentratorManager.Instance.AddTag(tag))
+            if (!SaveTag(tag))
             {
                 ShowValidationError(
                     "A tag with the same name already exists.");
@@ -262,7 +346,7 @@ namespace ScadaGUI
                 InitialValue = initialValue
             };
 
-            if (!DataConcentratorManager.Instance.AddTag(tag))
+            if (!SaveTag(tag))
             {
                 ShowValidationError(
                     "A tag with the same name already exists.");
@@ -270,8 +354,11 @@ namespace ScadaGUI
                 return false;
             }
 
-            DataConcentratorManager.Instance
-                .WriteAnalogOutput(tag.Name, initialValue);
+            if (!editMode)
+            {
+                DataConcentratorManager.Instance
+                    .WriteAnalogOutput(tag.Name, initialValue);
+            }
 
             return true;
         }
@@ -316,7 +403,7 @@ namespace ScadaGUI
                 OnScan = onScanCheckBox.IsChecked == true
             };
 
-            if (!DataConcentratorManager.Instance.AddTag(tag))
+            if (!SaveTag(tag))
             {
                 ShowValidationError(
                     "A tag with the same name already exists.");
@@ -360,7 +447,7 @@ namespace ScadaGUI
                 InitialValue = initialValue
             };
 
-            if (!DataConcentratorManager.Instance.AddTag(tag))
+            if (!SaveTag(tag))
             {
                 ShowValidationError(
                     "A tag with the same name already exists.");
@@ -368,8 +455,11 @@ namespace ScadaGUI
                 return false;
             }
 
-            DataConcentratorManager.Instance
-                .WriteDigitalOutput(tag.Name, initialValue);
+            if (!editMode)
+            {
+                DataConcentratorManager.Instance
+                    .WriteDigitalOutput(tag.Name, initialValue);
+            }
 
             return true;
         }

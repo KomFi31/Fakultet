@@ -223,6 +223,37 @@ namespace ScadaGUI
             window.ShowDialog();
         }
 
+        private void EditTag_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            Tag selectedTag =
+                tagsDataGrid.SelectedItem as Tag;
+
+            if (selectedTag == null)
+            {
+                MessageBox.Show(
+                    "Select a tag first.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            AddWindow editWindow =
+                new AddWindow(selectedTag);
+
+            editWindow.Owner = this;
+
+            bool? result = editWindow.ShowDialog();
+
+            if (result == true)
+            {
+                LoadTags();
+            }
+        }
+
         private void Window_Closing(
             object sender,
             System.ComponentModel.CancelEventArgs e)

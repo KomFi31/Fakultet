@@ -150,7 +150,8 @@
                         Margin="0,0,10,0"
                         Click="Cancel_Click"/>
 
-                <Button Content="Add"
+                <Button x:Name="confirmButton"
+                        Content="Add"
                         Width="90"
                         Height="32"
                         Click="Add_Click"/>
