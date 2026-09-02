@@ -357,6 +357,35 @@ namespace DataConcentrator
 
         #region Input Scanning
 
+        public bool SetInputScan(string tagName, bool enabled)
+        {
+            Tag tag = GetTag(tagName);
+
+            if (tag == null)
+                return false;
+
+            lock (dbLock)
+            {
+                if (tag is AnalogInput analogInput)
+                {
+                    analogInput.OnScan = enabled;
+                }
+                else if (tag is DigitalInput digitalInput)
+                {
+                    digitalInput.OnScan = enabled;
+                }
+                else
+                {
+                    // Output tagovi nemaju scan.
+                    return false;
+                }
+
+                ContextClass.Instance.SaveChanges();
+            }
+
+            return true;
+        }
+
         public void StartScanning()
         {
             if (scanRunning)

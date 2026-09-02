@@ -35,6 +35,12 @@
                     Height="35"
                     Click="Refresh_Click"/>
 
+            <Button Content="Toggle Scan"
+                    Width="110"
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Click="ToggleScan_Click"/>
+
         </StackPanel>
 
         <!-- Prikaz svih tagova -->
@@ -62,6 +68,75 @@
                 <DataGridTextColumn Header="I/O Address"
                                     Binding="{Binding IOAddress}"
                                     Width="130"/>
+
+                <DataGridTemplateColumn Header="Current Value"
+                        Width="130">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+
+                                        <!-- AO i DO za sada nemaju prikaz trenutne vrednosti -->
+                                        <Setter Property="Text"
+                                Value="-"/>
+
+                                        <Style.Triggers>
+
+                                            <DataTrigger Binding="{Binding Type}"
+                                         Value="AI">
+                                                <Setter Property="Text"
+                                        Value="{Binding CurrentValue}"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding Type}"
+                                         Value="DI">
+                                                <Setter Property="Text"
+                                        Value="{Binding CurrentValue}"/>
+                                            </DataTrigger>
+
+                                        </Style.Triggers>
+
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Scan"
+                        Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+
+                                        <Setter Property="Text"
+                                Value="-"/>
+
+                                        <Style.Triggers>
+
+                                            <DataTrigger Binding="{Binding Type}"
+                                         Value="AI">
+                                                <Setter Property="Text"
+                                        Value="{Binding OnScan}"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding Type}"
+                                         Value="DI">
+                                                <Setter Property="Text"
+                                        Value="{Binding OnScan}"/>
+                                            </DataTrigger>
+
+                                        </Style.Triggers>
+
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
 
             </DataGrid.Columns>
 

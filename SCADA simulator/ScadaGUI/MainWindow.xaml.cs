@@ -6,6 +6,7 @@
 
 using System.Windows;
 using DataConcentrator;
+using DataConcentrator.Model;
 
 namespace ScadaGUI
 {
@@ -51,6 +52,51 @@ namespace ScadaGUI
             RoutedEventArgs e)
         {
             LoadTags();
+        }
+
+        private void ToggleScan_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            Tag selectedTag =
+                tagsDataGrid.SelectedItem as Tag;
+
+            if (selectedTag == null)
+            {
+                MessageBox.Show(
+                    "Select a tag first.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            bool newScanState;
+
+            if (selectedTag is AnalogInput analogInput)
+            {
+                newScanState = !analogInput.OnScan;
+            }
+            else if (selectedTag is DigitalInput digitalInput)
+            {
+                newScanState = !digitalInput.OnScan;
+            }
+            else
+            {
+                MessageBox.Show(
+                    "Scan can only be enabled or disabled for input tags.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return;
+            }
+
+            DataConcentratorManager.Instance
+                .SetInputScan(selectedTag.Name, newScanState);
+
+            tagsDataGrid.Items.Refresh();
         }
 
         private void Window_Closing(
