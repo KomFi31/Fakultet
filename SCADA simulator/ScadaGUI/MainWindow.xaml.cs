@@ -16,6 +16,9 @@ namespace ScadaGUI
         {
             InitializeComponent();
 
+            SystemLogger.Log(
+                "SCADA application started.");
+
             DataConcentratorManager manager =
                 DataConcentratorManager.Instance;
 
@@ -305,6 +308,9 @@ namespace ScadaGUI
 
             ContextClass.Instance.SaveChanges();
             ContextClass.Instance.Dispose();
+
+            SystemLogger.Log(
+                "SCADA application closed.");
         }
     }
 }

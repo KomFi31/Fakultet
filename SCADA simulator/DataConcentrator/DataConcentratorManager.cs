@@ -86,6 +86,10 @@ namespace DataConcentrator
                 ContextClass.Instance.SaveChanges();
             }
 
+            SystemLogger.Log(
+                "Tag " + tag.Name + " added.");
+
+
             if (scanRunning && (tag is AnalogInput || tag is DigitalInput))
             {
                 lock (scanLock)
@@ -126,6 +130,9 @@ namespace DataConcentrator
 
                 ContextClass.Instance.SaveChanges();
             }
+
+            SystemLogger.Log(
+                "Tag " + tag.Name + " removed.");
 
             return true;
         }
@@ -183,6 +190,10 @@ namespace DataConcentrator
                 {
                     ContextClass.Instance.SaveChanges();
                 }
+
+                SystemLogger.Log(
+                    "Tag " + tag.Name + " updated.");
+
             }
 
             return true;
@@ -250,6 +261,9 @@ namespace DataConcentrator
                 ContextClass.Instance.SaveChanges();
             }
 
+            SystemLogger.Log(
+                "Alarm added for tag " + alarm.TagName + ".");
+
             return true;
         }
 
@@ -265,6 +279,9 @@ namespace DataConcentrator
                 ContextClass.Instance.Alarms.Remove(alarm);
                 ContextClass.Instance.SaveChanges();
             }
+
+            SystemLogger.Log(
+                "Alarm " + id + " removed.");
 
             return true;
         }
@@ -282,6 +299,9 @@ namespace DataConcentrator
 
                 ContextClass.Instance.SaveChanges();
             }
+
+            SystemLogger.Log(
+                "Alarm " + id + " acknowledged.");
 
             return true;
         }
@@ -347,6 +367,10 @@ namespace DataConcentrator
 
             PLC.Instance.WriteAnalogOutputValue(tag.IOAddress, value);
 
+            SystemLogger.Log(
+                "Analog output " + tagName +
+                " written with value " + value + ".");
+
             return true;
         }
 
@@ -359,6 +383,10 @@ namespace DataConcentrator
                 return false;
 
             PLC.Instance.WriteDigitalOutputValue(tag.IOAddress, value);
+
+            SystemLogger.Log(
+                "Digital output " + tagName +
+                " written with value " + value + ".");
 
             return true;
         }
@@ -392,6 +420,11 @@ namespace DataConcentrator
 
                 ContextClass.Instance.SaveChanges();
             }
+
+            SystemLogger.Log(
+                "Tag " + tagName +
+                " scan " +
+                (enabled ? "enabled." : "disabled."));
 
             return true;
         }
