@@ -31,6 +31,11 @@ namespace DataConcentrator
 
         private readonly object dbLock = new object();
 
+        private readonly object historyLock = new object();
+
+        private readonly Dictionary<string, List<AnalogValueRecord>> analogHistory =
+            new Dictionary<string, List<AnalogValueRecord>>();
+
         public static DataConcentratorManager Instance
         {
             get
@@ -104,6 +109,11 @@ namespace DataConcentrator
             {
                 scanTags.RemoveAll(t => t.Name == name);
                 lastScanTimes.Remove(name);
+            }
+
+            lock (historyLock)
+            {
+                analogHistory.Remove(name);
             }
 
             // Brisanjem taga uklanjaju se i alarmi vezani za njega.
@@ -467,6 +477,9 @@ namespace DataConcentrator
             double newValue =
                 PLC.Instance.ReadAnalogInputValue(tag.IOAddress);
 
+            // Svako uspesno ocitavanje AI taga cuva se u istoriji.
+            AddAnalogHistoryValue(tag.Name, newValue);
+
             // Prvo ocitavanje se uvek prihvata.
             if (!tag.CurrentValue.HasValue)
             {
@@ -602,6 +615,43 @@ namespace DataConcentrator
 
             // GUI dobija informaciju koji alarm se aktivirao.
             AlarmActivated?.Invoke(alarm.Id);
+        }
+
+        #endregion
+
+        #region Analog History
+
+        public List<AnalogValueRecord> GetAnalogHistory(string tagName)
+        {
+            lock (historyLock)
+            {
+                if (!analogHistory.ContainsKey(tagName))
+                    return new List<AnalogValueRecord>();
+
+                // Vraca se kopija liste da GUI ne menja originalnu kolekciju.
+                return analogHistory[tagName].ToList();
+            }
+        }
+
+        private void AddAnalogHistoryValue(
+            string tagName,
+            double value)
+        {
+            lock (historyLock)
+            {
+                if (!analogHistory.ContainsKey(tagName))
+                {
+                    analogHistory[tagName] =
+                        new List<AnalogValueRecord>();
+                }
+
+                analogHistory[tagName].Add(
+                    new AnalogValueRecord
+                    {
+                        TimeStamp = DateTime.Now,
+                        Value = value
+                    });
+            }
         }
 
         #endregion
