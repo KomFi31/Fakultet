@@ -28,7 +28,7 @@ namespace DataConcentrator
         public ContextClass() : base("name=ScadaContext")
         {
         }
-
+ 
         public DbSet<Tag> Tags { get; set; }
 
         public DbSet<Alarm> Alarms { get; set; }
