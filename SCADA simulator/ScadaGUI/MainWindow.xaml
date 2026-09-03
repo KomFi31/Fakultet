@@ -72,6 +72,13 @@
                     Padding="10,5"
                     Click="EditTag_Click"/>
 
+            <Button Content="History"
+                    Width="110"
+                    Height="40"
+                    Margin="10,0,0,0"
+                    Padding="10,5"
+                    Click="History_Click"/> 
+
         </StackPanel>
 
         <!-- Prikaz svih tagova -->

@@ -57,6 +57,7 @@
     <Compile Include="Model\Alarm.cs" />
     <Compile Include="Model\AnalogInput.cs" />
     <Compile Include="Model\AnalogOutput.cs" />
+    <Compile Include="Model\AnalogValueRecord.cs" />
     <Compile Include="Model\DigitalInput.cs" />
     <Compile Include="Model\DigitalOutput.cs" />
     <Compile Include="Model\TagType.cs" />

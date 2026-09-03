@@ -254,6 +254,45 @@ namespace ScadaGUI
             }
         }
 
+        private void History_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            Tag selectedTag =
+                tagsDataGrid.SelectedItem as Tag;
+
+            if (selectedTag == null)
+            {
+                MessageBox.Show(
+                    "Select a tag first.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            AnalogInput analogInput =
+                selectedTag as AnalogInput;
+
+            if (analogInput == null)
+            {
+                MessageBox.Show(
+                    "History is available only for analog input tags.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return;
+            }
+
+            HistoryWindow window =
+                new HistoryWindow(analogInput);
+
+            window.Owner = this;
+            window.ShowDialog();
+        }
+
         private void Window_Closing(
             object sender,
             System.ComponentModel.CancelEventArgs e)
