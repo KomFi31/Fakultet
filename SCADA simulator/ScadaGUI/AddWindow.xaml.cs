@@ -236,7 +236,7 @@ namespace ScadaGUI
                 TagType.AI))
             {
                 ShowValidationError(
-                    "Invalid I/O address for analog input.");
+                    "Invalid I/O adress for analog input");
 
                 return false;
             }
@@ -289,7 +289,7 @@ namespace ScadaGUI
             if (!SaveTag(tag))
             {
                 ShowValidationError(
-                    "A tag with the same name already exists.");
+                    "A tag with the same name or I/O address already exists.");
 
                 return false;
             }
@@ -307,7 +307,7 @@ namespace ScadaGUI
                 TagType.AO))
             {
                 ShowValidationError(
-                    "Invalid I/O address for Analog output.");
+                    "Invalid I/O adress for analog output.");
 
                 return false;
             }
@@ -349,7 +349,7 @@ namespace ScadaGUI
             if (!SaveTag(tag))
             {
                 ShowValidationError(
-                    "A tag with the same name already exists.");
+                    "A tag with the same name or I/O address already exists.");
 
                 return false;
             }
@@ -406,7 +406,7 @@ namespace ScadaGUI
             if (!SaveTag(tag))
             {
                 ShowValidationError(
-                    "A tag with the same name already exists.");
+                    "A tag with the same name or I/O address already exists.");
 
                 return false;
             }
@@ -450,7 +450,7 @@ namespace ScadaGUI
             if (!SaveTag(tag))
             {
                 ShowValidationError(
-                    "A tag with the same name already exists.");
+                    "A tag with the same name or I/O address already exists.");
 
                 return false;
             }

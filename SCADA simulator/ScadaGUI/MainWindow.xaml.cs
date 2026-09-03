@@ -7,6 +7,11 @@
 using System.Windows;
 using DataConcentrator;
 using DataConcentrator.Model;
+using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace ScadaGUI
 {
@@ -294,6 +299,121 @@ namespace ScadaGUI
 
             window.Owner = this;
             window.ShowDialog();
+        }
+
+        private void Report_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog =
+                new SaveFileDialog
+                {
+                    Filter = "Text file (*.txt)|*.txt",
+                    FileName = "SCADA_Report.txt"
+                };
+
+            if (saveFileDialog.ShowDialog() != true)
+                return;
+
+            try
+            {
+                List<string> reportLines =
+                    new List<string>();
+
+                reportLines.Add("SCADA ANALOG INPUT REPORT");
+                reportLines.Add(
+                    "Generated: " +
+                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+                reportLines.Add("");
+
+                List<AnalogInput> analogInputs =
+                    DataConcentratorManager.Instance
+                        .GetAllTags()
+                        .OfType<AnalogInput>()
+                        .ToList();
+
+                foreach (AnalogInput tag in analogInputs)
+                {
+                    double middleValue =
+                        (tag.HighLimit + tag.LowLimit) / 2.0;
+
+                    double lowerBound =
+                        middleValue - 5;
+
+                    double upperBound =
+                        middleValue + 5;
+
+                    List<AnalogValueRecord> history =
+                        DataConcentratorManager.Instance
+                            .GetAnalogHistory(tag.Name);
+
+                    List<AnalogValueRecord> matchingValues =
+                        history
+                            .Where(record =>
+                                record.Value >= lowerBound &&
+                                record.Value <= upperBound)
+                            .ToList();
+
+                    reportLines.Add(
+                        "Tag: " + tag.Name);
+
+                    reportLines.Add(
+                        "Required range: " +
+                        lowerBound.ToString("F2") +
+                        " - " +
+                        upperBound.ToString("F2") +
+                        " " +
+                        tag.Units);
+
+                    if (matchingValues.Count == 0)
+                    {
+                        reportLines.Add(
+                            "No recorded values in required range.");
+                    }
+                    else
+                    {
+                        foreach (AnalogValueRecord record
+                            in matchingValues)
+                        {
+                            reportLines.Add(
+                                record.TimeStamp
+                                    .ToString("yyyy-MM-dd HH:mm:ss.fff") +
+                                " | " +
+                                record.Value.ToString("F2") +
+                                " " +
+                                tag.Units);
+                        }
+                    }
+
+                    reportLines.Add("");
+                }
+
+                File.WriteAllLines(
+                    saveFileDialog.FileName,
+                    reportLines);
+
+                SystemLogger.Log(
+                    "Report generated: " +
+                    saveFileDialog.FileName);
+
+                MessageBox.Show(
+                    "Report successfully generated.",
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                SystemLogger.LogError(ex);
+
+                MessageBox.Show(
+                    "Error while generating report: " +
+                    ex.Message,
+                    "SCADA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void Window_Closing(

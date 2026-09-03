@@ -9,7 +9,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SCADA Application"
         Height="600"
-        Width="1050"
+        Width="1130"
         Closing="Window_Closing">
 
     <Grid Margin="20">
@@ -77,7 +77,14 @@
                     Height="40"
                     Margin="10,0,0,0"
                     Padding="10,5"
-                    Click="History_Click"/> 
+                    Click="History_Click"/>
+
+            <Button Content="Report"
+                    Width="110"
+                    Height="40"
+                    Margin="10,0,0,0"
+                    Padding="10,5"
+                    Click="Report_Click"/>
 
         </StackPanel>
 
@@ -107,34 +114,44 @@
                                     Binding="{Binding IOAddress}"
                                     Width="130"/>
 
-                <DataGridTemplateColumn Header="Current Value"
-                        Width="130">
+                <DataGridTemplateColumn Header="Current Value">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock>
+                            <TextBlock HorizontalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
 
-                                        <!-- AO i DO za sada nemaju prikaz trenutne vrednosti -->
-                                        <Setter Property="Text"
-                                Value="-"/>
+                                        <Setter Property="Text" Value="-"/>
 
                                         <Style.Triggers>
 
-                                            <DataTrigger Binding="{Binding Type}"
-                                         Value="AI">
+                                            <DataTrigger Binding="{Binding Type}" Value="AI">
                                                 <Setter Property="Text"
-                                        Value="{Binding CurrentValue}"/>
+                                        Value="{Binding CurrentValue,
+                                                TargetNullValue=-,
+                                                StringFormat={}{0:F2}}"/>
                                             </DataTrigger>
 
-                                            <DataTrigger Binding="{Binding Type}"
-                                         Value="DI">
+                                            <DataTrigger Binding="{Binding Type}" Value="DI">
                                                 <Setter Property="Text"
-                                        Value="{Binding CurrentValue}"/>
+                                        Value="{Binding CurrentValue,
+                                                TargetNullValue=-}"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding Type}" Value="AO">
+                                                <Setter Property="Text"
+                                        Value="{Binding CurrentValue,
+                                                TargetNullValue=-,
+                                                StringFormat={}{0:F2}}"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding Type}" Value="DO">
+                                                <Setter Property="Text"
+                                        Value="{Binding CurrentValue,
+                                                TargetNullValue=-}"/>
                                             </DataTrigger>
 
                                         </Style.Triggers>
-
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>

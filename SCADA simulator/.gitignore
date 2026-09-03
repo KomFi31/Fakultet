@@ -10,3 +10,7 @@ packages/
 
 # Logs
 *.log
+
+# Reports
+Reports/*
+!Reports/.gitkeep

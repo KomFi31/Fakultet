@@ -78,6 +78,9 @@ namespace DataConcentrator
             if (GetTag(tag.Name) != null)
                 return false;
 
+            if (IsIOAddressInUse(tag.IOAddress))
+                return false;
+
             SetTagType(tag);
 
             lock (dbLock)
@@ -100,6 +103,19 @@ namespace DataConcentrator
             }
 
             return true;
+        }
+
+        private bool IsIOAddressInUse(
+            string ioAddress,
+            string excludedTagName = null)
+        {
+            lock (dbLock)
+            {
+                return ContextClass.Instance.Tags.Any(
+                    tag =>
+                        tag.IOAddress == ioAddress &&
+                        tag.Name != excludedTagName);
+            }
         }
 
         public bool RemoveTag(string name)
@@ -150,6 +166,13 @@ namespace DataConcentrator
             if (existingTag.GetType() != updatedTag.GetType())
                 return false;
 
+            if (IsIOAddressInUse(
+                updatedTag.IOAddress,
+                updatedTag.Name))
+            {
+                return false;
+            }
+
             lock (dbLock)
             {
                 // Zajednicka svojstva svih tagova.
@@ -192,7 +215,7 @@ namespace DataConcentrator
                 }
 
                 SystemLogger.Log(
-                    "Tag " + tag.Name + " updated.");
+                    "Tag " + updatedTag.Name + " updated.");
 
             }
 
@@ -367,6 +390,8 @@ namespace DataConcentrator
 
             PLC.Instance.WriteAnalogOutputValue(tag.IOAddress, value);
 
+            tag.CurrentValue = value;
+
             SystemLogger.Log(
                 "Analog output " + tagName +
                 " written with value " + value + ".");
@@ -383,6 +408,8 @@ namespace DataConcentrator
                 return false;
 
             PLC.Instance.WriteDigitalOutputValue(tag.IOAddress, value);
+
+            tag.CurrentValue = value;
 
             SystemLogger.Log(
                 "Digital output " + tagName +

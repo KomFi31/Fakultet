@@ -1,4 +1,6 @@
-﻿namespace DataConcentrator.Model
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DataConcentrator.Model
 {
     /*
      * Predstavlja analogni izlazni tag.
@@ -50,6 +52,19 @@
             {
                 initialValue = value;
                 OnPropertyChanged("InitialValue");
+            }
+        }
+
+        private double? currentValue;
+
+        [NotMapped]
+        public double? CurrentValue
+        {
+            get { return currentValue; }
+            set
+            {
+                currentValue = value;
+                OnPropertyChanged(nameof(CurrentValue));
             }
         }
     }
