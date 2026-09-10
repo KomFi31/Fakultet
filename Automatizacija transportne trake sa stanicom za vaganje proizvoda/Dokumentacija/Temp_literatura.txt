@@ -1,0 +1,8 @@
+1. METTLER TOLEDO – Stop-and-go / logističko merenje paketa
+https://www.mt.com/us/en/home/library/stories/transport-logistics/maximize-weighing-performance-in-the-logistics-industry.html
+
+2. Schneider Electric Blog – Soft starters vs VFDs for conveyor motor applications
+https://blog.se.com/industry/machine-and-process-management/2020/08/03/soft-starters-vs-vfds-which-one-is-right-for-your-conveyor-motor-application/
+
+3. Siemens SIWAREX / dokumentacija o standstill monitoring-u
+https://device.report/m/cd8dd2a3db71e98ff49ef58559471e6f20e1a6299303635366b2257636d9271a
